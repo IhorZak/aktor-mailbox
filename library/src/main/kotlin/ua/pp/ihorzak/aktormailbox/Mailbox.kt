@@ -16,14 +16,17 @@
 
 package ua.pp.ihorzak.aktormailbox
 
-import kotlin.test.Test
-
 /**
- * [BufferChannel] unit tests.
+ * // TODO Describe
  */
-class BufferChannelTest {
-    @Test
-    fun test() {
-        // TODO Implement
-    }
+public interface Mailbox<I, O> {
+    public val isEmpty: Boolean
+
+    public val isFull: Boolean
+
+    public fun offer(message: I)
+
+    public fun peek(): O?
+
+    public fun poll(): O?
 }

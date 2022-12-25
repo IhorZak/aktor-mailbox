@@ -16,9 +16,14 @@
 
 package ua.pp.ihorzak.aktormailbox
 
+import kotlin.test.Test
+
 /**
- * // TODO Describe
+ * [MediatorChannel] unit tests.
  */
-internal class BufferChannel {
-    // TODO Implement
+class MediatorChannelTest {
+    @Test
+    fun test() {
+        // TODO Implement
+    }
 }
