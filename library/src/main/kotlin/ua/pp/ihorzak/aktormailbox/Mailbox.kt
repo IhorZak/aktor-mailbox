@@ -17,16 +17,41 @@
 package ua.pp.ihorzak.aktormailbox
 
 /**
+ * Represents the type of incoming messages queueing. Each actor has a single mailbox which acts as a queue.
+ * It can be used to perform reordering of messages, messages type transformations etc.
  *
+ * @param I The type of messages to be sent to actor.
+ * @param O The type of messages actually handled by actor.
  */
 public interface Mailbox<I, O> {
+    /**
+     * Indicates if this actor mailbox queue has no messages to process by actor.
+     */
     public val isEmpty: Boolean
 
+    /**
+     * Indicates if this actor mailbox queue has maximal number of messages and cannot accept more messages.
+     */
     public val isFull: Boolean
 
+    /**
+     * Adds message to actor mailbox queue.
+     *
+     * @param message Message to add to actor mailbox queue.
+     */
     public fun offer(message: I)
 
+    /**
+     * Retrieves, but does not remove a message which is next to be processed by actor from this mailbox queue.
+     *
+     * @return A message which is next to be processed by actor if this mailbox queue is not empty, otherwise null.
+     */
     public fun peek(): O?
 
+    /**
+     * Retrieves and removes a message which is next to be processed by actor from this mailbox queue.
+     *
+     * @return A message which is next to be processed by actor if this mailbox queue is not empty, otherwise null.
+     */
     public fun poll(): O?
 }
