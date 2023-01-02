@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Ihor Zakhozhyi
+ * Copyright 2023 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package ua.pp.ihorzak.aktormailbox
 
 /**
- * // TODO Describe
+ *
  */
 public interface Mailbox<I, O> {
     public val isEmpty: Boolean
