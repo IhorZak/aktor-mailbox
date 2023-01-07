@@ -18,30 +18,30 @@ package ua.pp.ihorzak.aktormailbox
 
 import java.util.*
 
-private const val INITIAL_CAPACITY = 16
-
 /**
- * Implementation of actor mailbox queue which sorts messages using specified comparison function.
+ * Implementation of actor mailbox queue which transforms incoming messages to messages handled by the actor using
+ * specified transformation function.
  *
- * @param T The type of actor messages.
+ * @param I The type of incoming actor messages.
+ * @param O The type of messages the actor handles
  *
- * @param comparator A comparison function, which imposes a total ordering on actor messages.
+ * @param transform A transformation function, which converts incoming messages to messages the actor handles.
  */
-public class PriorityMailbox<T>(
-    comparator: Comparator<T>,
-) : Mailbox<T, T> {
-    private val queue: Queue<T> = PriorityQueue(INITIAL_CAPACITY, comparator)
+public class TransformMailbox<I, O>(
+    private val transform: (I) -> O,
+) : Mailbox<I, O> {
+    private val queue: Queue<O> = LinkedList()
 
     override val isEmpty: Boolean
         get() = queue.isEmpty()
 
     override val isFull: Boolean = false
 
-    override fun offer(message: T) {
-        queue.offer(message)
+    override fun offer(message: I) {
+        queue.add(transform(message))
     }
 
-    override fun peek(): T? = queue.peek()
+    override fun peek(): O? = queue.peek()
 
-    override fun poll(): T? = queue.poll()
+    override fun poll(): O? = queue.poll()
 }
