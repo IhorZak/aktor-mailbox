@@ -24,6 +24,8 @@ package ua.pp.ihorzak.aktormailbox
  * @param O The type of messages actually handled by actor.
  */
 public interface Mailbox<I, O> {
+    public companion object;
+
     /**
      * Indicates if this actor mailbox queue has no messages to process by actor.
      */

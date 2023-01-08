@@ -27,7 +27,7 @@ private const val INITIAL_CAPACITY = 16
  *
  * @param comparator A comparison function, which imposes a total ordering on actor messages.
  */
-public class PriorityMailbox<T>(
+internal class PriorityMailbox<T>(
     comparator: Comparator<T>,
 ) : Mailbox<T, T> {
     private val queue: Queue<T> = PriorityQueue(INITIAL_CAPACITY, comparator)

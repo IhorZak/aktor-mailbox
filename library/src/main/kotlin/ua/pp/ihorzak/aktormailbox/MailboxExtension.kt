@@ -16,32 +16,31 @@
 
 package ua.pp.ihorzak.aktormailbox
 
-import java.util.*
+/**
+ * Creates actor mailbox queue which sorts messages using specified comparison function.
+ *
+ * @param T The type of actor messages.
+ *
+ * @param comparator A comparison function, which imposes a total ordering on actor messages.
+ *
+ * @return Actor mailbox queue which sorts messages using specified comparison function.
+ */
+public fun <T> Mailbox.Companion.priority(
+    comparator: Comparator<T>,
+): Mailbox<T, T> = PriorityMailbox(comparator)
 
 /**
- * Implementation of actor mailbox queue which transforms incoming messages to messages handled by the actor using
- * specified transformation function.
+ * Creates actor mailbox queue which transforms incoming messages to messages handled by the actor using specified
+ * transformation function.
  *
  * @param I The type of incoming actor messages.
  * @param O The type of messages the actor handles.
  *
  * @param transform A transformation function, which converts incoming messages to messages the actor handles.
+ *
+ * @return Actor mailbox queue which transforms incoming messages to messages handled by the actor using specified
+ * transformation function.
  */
-internal class TransformMailbox<I, O>(
-    private val transform: (I) -> O,
-) : Mailbox<I, O> {
-    private val queue: Queue<O> = LinkedList()
-
-    override val isEmpty: Boolean
-        get() = queue.isEmpty()
-
-    override val isFull: Boolean = false
-
-    override fun offer(message: I) {
-        queue.add(transform(message))
-    }
-
-    override fun peek(): O? = queue.peek()
-
-    override fun poll(): O? = queue.poll()
-}
+public fun <I, O> Mailbox.Companion.transform(
+    transform: (I) -> O,
+): Mailbox<I, O> = TransformMailbox(transform)
