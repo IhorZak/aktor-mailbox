@@ -42,7 +42,7 @@ import kotlinx.coroutines.selects.SelectClause2
  * @see Mailbox
  */
 @ExperimentalCoroutinesApi
-internal abstract class MediatorChannel<I, O>(
+internal class MediatorChannel<I, O>(
     scope: CoroutineScope,
     private val inputChannel: ReceiveChannel<I>,
     private val outputChannel: SendChannel<O>,
