@@ -14,4 +14,5 @@ dependencies {
 
     implementation(Library.KOTLIN_STDLIB)
     implementation(Library.KOTLINX_COROUTINES_CORE)
+    implementation(Library.KOTLINX_CLI)
 }
