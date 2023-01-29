@@ -8,4 +8,6 @@ object Version {
     const val KOTLIN = "1.8.0"
 
     const val KOTLINX_COROUTINES = "1.6.4"
+
+    const val MOCKITO_KOTLIN = "4.1.0"
 }

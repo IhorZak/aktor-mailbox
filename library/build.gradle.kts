@@ -18,6 +18,7 @@ dependencies {
     implementation(Library.KOTLINX_COROUTINES_CORE)
 
     testImplementation(Library.KOTLIN_TEST)
+    testImplementation(Library.MOCKITO_KOTLIN)
 }
 
 tasks.getByName<Test>("test") {
