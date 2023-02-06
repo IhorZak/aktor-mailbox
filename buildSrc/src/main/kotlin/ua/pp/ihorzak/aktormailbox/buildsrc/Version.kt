@@ -5,7 +5,7 @@ object Version {
 
     const val VERSIONS = "0.44.0"
 
-    const val KOTLIN = "1.8.0"
+    const val KOTLIN = "1.8.10"
 
     const val KOTLINX_COROUTINES = "1.6.4"
     const val KOTLINX_CLI = "0.3.5"
