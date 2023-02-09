@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="sample-priority" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="ua.pp.ihorzak.aktormailbox.sample.MainKt" />
+    <module name="aktor-mailbox.sample.main" />
+    <option name="PROGRAM_PARAMETERS" value="-m priority 1 2 3 6 5 4" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
