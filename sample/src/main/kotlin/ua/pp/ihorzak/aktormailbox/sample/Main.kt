@@ -16,12 +16,92 @@
 
 package ua.pp.ihorzak.aktormailbox.sample
 
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.required
+import kotlinx.cli.vararg
+import kotlinx.coroutines.*
+import ua.pp.ihorzak.aktormailbox.Mailbox
+import ua.pp.ihorzak.aktormailbox.aktor
+import ua.pp.ihorzak.aktormailbox.priority
+import ua.pp.ihorzak.aktormailbox.transform
+import kotlin.coroutines.coroutineContext
+
 /**
  * Sample application entry point function.
  *
  * @param args Application start arguments.
  */
 suspend fun main(args: Array<String>) {
-    println("Hello, world!")
-    // TODO Implement
+    val scope = CoroutineScope(coroutineContext + Dispatchers.Default)
+    processInput(
+        input = prepareInput(args),
+        scope = scope,
+    )
 }
+
+private fun prepareInput(
+    args: Array<String>,
+): Input = with(ArgParser("aktor-mailbox-sample")) {
+    val mailboxType by option(
+        type = ArgType.Choice(
+            toVariant = { s -> MailboxType.valueOf(s.uppercase()) },
+        ),
+        fullName = "mailbox",
+        shortName = "m",
+        description = "Type of aktor mailbox",
+    ).required()
+    val elementList by argument(
+        type = ArgType.Int,
+        fullName = "messages",
+        description = "Messages to be sent to aktor mailbox",
+    ).vararg()
+    parse(args)
+    Input(
+        mailboxType = mailboxType,
+        elements = elementList,
+    )
+}
+
+private suspend fun processInput(
+    scope: CoroutineScope,
+    input: Input,
+) {
+    println("input = $input")
+    val finishJob: CompletableJob = Job()
+    val aktor = scope.aktor(
+        mailbox = when (input.mailboxType) {
+            MailboxType.PRIORITY -> Mailbox.priority(Int::compareTo)
+            MailboxType.TRANSFORM -> Mailbox.transform { element -> element * element }
+        }
+    ) {
+        var processedCount = 0
+        for (message in channel) {
+            println("Processing message: $message")
+            delay(1000L)
+            println("Processed message: $message")
+            if (++processedCount == input.elements.size) {
+                finishJob.complete()
+            }
+        }
+    }
+    input.elements.forEachIndexed { index, element ->
+        println("Sending message: $element")
+        aktor.send(element)
+        println("Sent message: $element")
+        if (index < input.elements.size - 1) {
+            delay(400L)
+        }
+    }
+    finishJob.join()
+}
+
+private enum class MailboxType {
+    PRIORITY,
+    TRANSFORM,
+}
+
+private data class Input(
+    val mailboxType: MailboxType,
+    val elements: Collection<Int>
+)
