@@ -16,14 +16,9 @@
 
 package ua.pp.ihorzak.aktormailbox
 
-import kotlinx.coroutines.CompletionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ActorScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.actor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -39,8 +34,6 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * @param mailbox Aktor mailbox which encapsulates preprocessing of aktor input messages before processing. See [Mailbox].
  * @param context Additional to [CoroutineScope.coroutineContext] context of the coroutine.
- * @param start Coroutine start option. The default value is [CoroutineStart.DEFAULT].
- * @param onCompletion Optional completion handler for the actor coroutine.
  * @param block The coroutine code to handle preprocessed messages.
  *
  * @return [SendChannel] to send messages to the aktor mailbox.
@@ -49,19 +42,32 @@ import kotlin.coroutines.EmptyCoroutineContext
 public fun <I, O> CoroutineScope.aktor(
     mailbox: Mailbox<I, O>,
     context: CoroutineContext = EmptyCoroutineContext,
-    start: CoroutineStart = CoroutineStart.DEFAULT,
-    onCompletion: CompletionHandler? = null,
-    block: suspend ActorScope<O>.() -> Unit,
-): SendChannel<I> = Channel<I>().also { inputChannel ->
-    MediatorChannel(
-        scope = this,
-        inputChannel = inputChannel,
-        outputChannel = actor(
-            context = context,
-            start = start,
-            onCompletion = onCompletion,
-            block = block,
-        ),
-        mailbox = mailbox,
-    )
+    block: suspend (message: O) -> Unit,
+): SendChannel<I> {
+    val inputChannel = Channel<I>(capacity = Channel.UNLIMITED)
+    launch(context) {
+        while (!inputChannel.isClosedForSend) {
+            val result = inputChannel.tryReceive()
+            if (result.isSuccess) {
+                mailbox.offer(result.getOrThrow())
+            }
+            yield()
+        }
+    }
+    launch(context) {
+        while (!inputChannel.isClosedForSend) {
+            while (mailbox.isEmpty && !inputChannel.isClosedForSend) {
+                yield()
+            }
+            mailbox.poll()?.let { message ->
+                try {
+                    block(message)
+                } catch (throwable: Throwable) {
+                    inputChannel.close(throwable)
+                    throw throwable
+                }
+            }
+        }
+    }
+    return inputChannel
 }

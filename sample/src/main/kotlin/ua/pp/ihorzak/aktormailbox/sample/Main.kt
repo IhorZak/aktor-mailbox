@@ -32,8 +32,9 @@ import kotlin.coroutines.coroutineContext
  *
  * @param args Application start arguments.
  */
+@OptIn(DelicateCoroutinesApi::class)
 suspend fun main(args: Array<String>) {
-    val scope = CoroutineScope(coroutineContext + Dispatchers.Default)
+    val scope = CoroutineScope(coroutineContext + newSingleThreadContext("aktor"))
     processInput(
         input = prepareInput(args),
         scope = scope,
@@ -69,20 +70,18 @@ private suspend fun processInput(
 ) {
     println("input = $input")
     val finishJob: CompletableJob = Job()
+    var processedCount = 0
     val aktor = scope.aktor(
         mailbox = when (input.mailboxType) {
             MailboxType.PRIORITY -> Mailbox.priority(Int::compareTo)
             MailboxType.TRANSFORM -> Mailbox.transform { element -> element * element }
         }
-    ) {
-        var processedCount = 0
-        for (message in channel) {
-            println("Processing message: $message")
-            delay(1000L)
-            println("Processed message: $message")
-            if (++processedCount == input.elements.size) {
-                finishJob.complete()
-            }
+    ) { message ->
+        println("${Thread.currentThread().name}: Processing message: $message")
+        delay(1000L)
+        println("${Thread.currentThread().name}: Processed message: $message")
+        if (++processedCount == input.elements.size) {
+            finishJob.complete()
         }
     }
     input.elements.forEachIndexed { index, element ->
