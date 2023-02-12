@@ -35,13 +35,9 @@ internal class TransformMailbox<I, O>(
     override val isEmpty: Boolean
         get() = queue.isEmpty()
 
-    override val isFull: Boolean = false
-
     override fun offer(message: I) {
         queue.add(transform(message))
     }
-
-    override fun peek(): O? = queue.peek()
 
     override fun poll(): O? = queue.poll()
 }

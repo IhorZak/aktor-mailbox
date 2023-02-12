@@ -58,17 +58,6 @@ class TransformMailboxTest {
     }
 
     @Test
-    fun `isEmpty after offer() and peek() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-        mailbox.peek()
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
-    @Test
     fun `isEmpty after offer(), poll() and offer() should return false`() {
         val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
         mailbox.offer("Message 1")
@@ -76,47 +65,6 @@ class TransformMailboxTest {
         mailbox.offer("Message 2")
 
         val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull in initial state should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() and poll() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-        mailbox.poll()
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() and peek() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-        mailbox.peek()
-
-        val result = mailbox.isFull
 
         assertFalse(result)
     }
@@ -130,60 +78,6 @@ class TransformMailboxTest {
         mailbox.offer(message)
 
         verify(transform, times(1)).invoke(message)
-    }
-
-    @Test
-    fun `peek() in initial state should return null`() {
-        val transform: (String) -> String = { input -> "Processed $input" }
-        val mailbox = TransformMailbox(transform)
-
-        val result = mailbox.peek()
-
-        assertNull(result)
-    }
-
-    @Test
-    fun `peek() after offer() should return transformed using transform value`() {
-        val transform: (String) -> String = { input -> "Processed $input" }
-        val mailbox = TransformMailbox(transform)
-        val message = "Message 1"
-        mailbox.offer(message)
-
-        val result = mailbox.peek()
-
-        assertEquals(
-            expected = transform(message),
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `peek() after offer() and peek() should return transformed using transform value`() {
-        val transform: (String) -> String = { input -> "Processed $input" }
-        val mailbox = TransformMailbox(transform)
-        val message = "Message 1"
-        mailbox.offer(message)
-        mailbox.peek()
-
-        val result = mailbox.peek()
-
-        assertEquals(
-            expected = transform(message),
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `peek() after offer() and poll() should return null`() {
-        val transform: (String) -> String = { input -> "Processed $input" }
-        val mailbox = TransformMailbox(transform)
-        val message = "Message 1"
-        mailbox.offer(message)
-        mailbox.poll()
-
-        val result = mailbox.peek()
-
-        assertNull(result)
     }
 
     @Test
@@ -202,22 +96,6 @@ class TransformMailboxTest {
         val mailbox = TransformMailbox(transform)
         val message = "Message 1"
         mailbox.offer(message)
-
-        val result = mailbox.poll()
-
-        assertEquals(
-            expected = transform(message),
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `poll() after offer() and peek() should return transformed using transform value`() {
-        val transform: (String) -> String = { input -> "Processed $input" }
-        val mailbox = TransformMailbox(transform)
-        val message = "Message 1"
-        mailbox.offer(message)
-        mailbox.peek()
 
         val result = mailbox.poll()
 

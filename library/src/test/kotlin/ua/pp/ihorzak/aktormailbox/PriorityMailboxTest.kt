@@ -53,17 +53,6 @@ class PriorityMailboxTest {
     }
 
     @Test
-    fun `isEmpty after offer() and peek() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-        mailbox.peek()
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
-    @Test
     fun `isEmpty after offer(), poll() and offer() should return false`() {
         val mailbox = PriorityMailbox<Int>(Int::compareTo)
         mailbox.offer(1)
@@ -73,115 +62,6 @@ class PriorityMailboxTest {
         val result = mailbox.isEmpty
 
         assertFalse(result)
-    }
-
-    @Test
-    fun `isFull in initial state should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() and poll() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-        mailbox.poll()
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isFull after offer() and peek() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-        mailbox.peek()
-
-        val result = mailbox.isFull
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `peek() in initial state should return null`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-
-        val result = mailbox.peek()
-
-        assertNull(result)
-    }
-
-    @Test
-    fun `peek() after offer() should return value`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        val message = 1
-        mailbox.offer(message)
-
-        val result = mailbox.peek()
-
-        assertEquals(
-            expected = message,
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `peek() after offer() and peek() should return value`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        val message = 1
-        mailbox.offer(message)
-        mailbox.peek()
-
-        val result = mailbox.peek()
-
-        assertEquals(
-            expected = message,
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `peek() after offer() and poll() should return null`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        val message = 1
-        mailbox.offer(message)
-        mailbox.poll()
-
-        val result = mailbox.peek()
-
-        assertNull(result)
-    }
-
-    @Test
-    fun `peek() after offer(), offer() and offer() should return value according to comparator`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        val message1 = 3
-        val message2 = 1
-        val message3 = 2
-        mailbox.offer(message1)
-        mailbox.offer(message2)
-        mailbox.offer(message3)
-
-        val result = mailbox.peek()
-
-        assertEquals(
-            expected = minOf(message1, message2, message3),
-            actual = result,
-        )
     }
 
     @Test
@@ -198,21 +78,6 @@ class PriorityMailboxTest {
         val mailbox = PriorityMailbox<Int>(Int::compareTo)
         val message = 1
         mailbox.offer(message)
-
-        val result = mailbox.poll()
-
-        assertEquals(
-            expected = message,
-            actual = result,
-        )
-    }
-
-    @Test
-    fun `poll() after offer() and peek() should return value`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        val message = 1
-        mailbox.offer(message)
-        mailbox.peek()
 
         val result = mailbox.poll()
 

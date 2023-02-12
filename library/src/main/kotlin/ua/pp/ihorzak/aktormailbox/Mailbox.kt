@@ -32,23 +32,11 @@ public interface Mailbox<I, O> {
     public val isEmpty: Boolean
 
     /**
-     * Indicates if this actor mailbox queue has maximal number of messages and cannot accept more messages.
-     */
-    public val isFull: Boolean
-
-    /**
      * Adds message to actor mailbox queue.
      *
      * @param message Message to add to actor mailbox queue.
      */
     public fun offer(message: I)
-
-    /**
-     * Retrieves, but does not remove a message which is next to be processed by actor from this mailbox queue.
-     *
-     * @return A message which is next to be processed by actor if this mailbox queue is not empty, otherwise null.
-     */
-    public fun peek(): O?
 
     /**
      * Retrieves and removes a message which is next to be processed by actor from this mailbox queue.

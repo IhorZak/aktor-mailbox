@@ -35,13 +35,9 @@ internal class PriorityMailbox<T>(
     override val isEmpty: Boolean
         get() = queue.isEmpty()
 
-    override val isFull: Boolean = false
-
     override fun offer(message: T) {
         queue.offer(message)
     }
-
-    override fun peek(): T? = queue.peek()
 
     override fun poll(): T? = queue.poll()
 }
