@@ -17,6 +17,7 @@
 package ua.pp.ihorzak.aktormailbox
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlin.coroutines.CoroutineContext
@@ -44,24 +45,30 @@ public fun <I, O> CoroutineScope.aktor(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend (message: O) -> Unit,
 ): SendChannel<I> {
-    val inputChannel = Channel<I>(capacity = Channel.UNLIMITED)
+    val inputChannel = Channel<I>(
+        capacity = Channel.UNLIMITED,
+    )
+    val mailboxHasMessagesChannel = Channel<Unit>(
+        capacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
     launch(context) {
         while (!inputChannel.isClosedForSend) {
-            val result = inputChannel.tryReceive()
-            if (result.isSuccess) {
-                mailbox.offer(result.getOrThrow())
-            }
-            yield()
+            mailbox.offer(inputChannel.receive())
+            mailboxHasMessagesChannel.send(Unit)
         }
     }
     launch(context) {
         while (!inputChannel.isClosedForSend) {
             while (mailbox.isEmpty && !inputChannel.isClosedForSend) {
-                yield()
+                mailboxHasMessagesChannel.receiveCatching()
             }
             mailbox.poll()?.let { message ->
                 try {
                     block(message)
+                    if (!mailbox.isEmpty) {
+                        mailboxHasMessagesChannel.send(Unit)
+                    }
                 } catch (throwable: Throwable) {
                     inputChannel.close(throwable)
                     throw throwable
