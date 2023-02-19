@@ -55,6 +55,9 @@ public fun <I, O> CoroutineScope.aktor(
     inputChannel.invokeOnClose { throwable ->
         mailboxHasMessagesChannel.close(throwable)
     }
+    coroutineContext[Job]?.invokeOnCompletion { throwable ->
+        inputChannel.close(throwable)
+    }
     launch(context) {
         while (!inputChannel.isClosedForSend) {
             val result = inputChannel.receiveCatching()
