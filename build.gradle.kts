@@ -12,6 +12,7 @@ buildscript {
     dependencies {
         classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.VERSIONS)
         classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.KOTLIN)
+        classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.DOKKA)
     }
 }
 
