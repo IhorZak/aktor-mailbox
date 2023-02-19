@@ -52,26 +52,32 @@ public fun <I, O> CoroutineScope.aktor(
         capacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+    inputChannel.invokeOnClose { throwable ->
+        mailboxHasMessagesChannel.close(throwable)
+    }
     launch(context) {
         while (!inputChannel.isClosedForSend) {
-            mailbox.offer(inputChannel.receive())
-            mailboxHasMessagesChannel.send(Unit)
+            val result = inputChannel.receiveCatching()
+            if (result.isSuccess) {
+                mailbox.offer(result.getOrThrow())
+                mailboxHasMessagesChannel.send(Unit)
+            }
         }
     }
     launch(context) {
         while (!inputChannel.isClosedForSend) {
-            while (mailbox.isEmpty && !inputChannel.isClosedForSend) {
-                mailboxHasMessagesChannel.receiveCatching()
-            }
-            mailbox.poll()?.let { message ->
-                try {
-                    block(message)
-                    if (!mailbox.isEmpty) {
-                        mailboxHasMessagesChannel.send(Unit)
+            val result = mailboxHasMessagesChannel.receiveCatching()
+            if (result.isSuccess) {
+                mailbox.poll()?.let { message ->
+                    try {
+                        block(message)
+                        if (!mailbox.isEmpty) {
+                            mailboxHasMessagesChannel.send(Unit)
+                        }
+                    } catch (throwable: Throwable) {
+                        inputChannel.close(throwable)
+                        throw throwable
                     }
-                } catch (throwable: Throwable) {
-                    inputChannel.close(throwable)
-                    throw throwable
                 }
             }
         }
