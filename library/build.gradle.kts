@@ -30,8 +30,8 @@ java {
 }
 
 dependencies {
-    implementation(Library.KOTLIN_STDLIB)
-    implementation(Library.KOTLINX_COROUTINES_CORE)
+    api(Library.KOTLIN_STDLIB)
+    api(Library.KOTLINX_COROUTINES_CORE)
 
     testImplementation(Library.KOTLIN_TEST)
     testImplementation(Library.KOTLINX_COROUTINES_TEST)
