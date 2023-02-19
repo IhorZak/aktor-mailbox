@@ -48,7 +48,7 @@ buildscript {
 }
 
 dependencies {
-    implementation("ua.pp.ihorzak:aktor-mailbox:0.1.0")
+    implementation("ua.pp.ihorzak:aktor-mailbox:0.1.1")
 }
 ```
 
