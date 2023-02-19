@@ -1,7 +1,12 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 import ua.pp.ihorzak.aktormailbox.buildsrc.Plugin
+import java.util.*
+
+plugins {
+    @Suppress("RemoveRedundantQualifierName")
+    id(ua.pp.ihorzak.aktormailbox.buildsrc.Plugin.NEXUS_PUBLISH) version ua.pp.ihorzak.aktormailbox.buildsrc.Version.NEXUS_PUBLISH
+}
 
 buildscript {
     repositories {
@@ -13,6 +18,23 @@ buildscript {
         classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.VERSIONS)
         classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.KOTLIN)
         classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.DOKKA)
+        classpath(ua.pp.ihorzak.aktormailbox.buildsrc.Classpath.PUBLISH)
+    }
+}
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+nexusPublishing {
+    repositories {
+        create("sonatype") {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(localProperties.getProperty("sonatypeUsername"))
+            password.set(localProperties.getProperty("sonatypePassword"))
+            stagingProfileId.set(localProperties.getProperty("sonatypeStagingProfileId"))
+        }
     }
 }
 
@@ -45,7 +67,7 @@ allprojects {
         fun isNonStableVersion(version: String): Boolean {
             val stableWordList = listOf("RELEASE", "FINAL", "GA")
             val unstableWordList = listOf("BETA", "RC", "-M")
-            val upperCaseVersion = version.toUpperCase()
+            val upperCaseVersion = version.uppercase(Locale.getDefault())
             val containsStableKeyword = stableWordList.any { upperCaseVersion.contains(it) }
             val containsUnstableKeyword = unstableWordList.any { upperCaseVersion.contains(it) }
             val versionRegex = "^[0-9,.v-]+(-r)?$".toRegex()
