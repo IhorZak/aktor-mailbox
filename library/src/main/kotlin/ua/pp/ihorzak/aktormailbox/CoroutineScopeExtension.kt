@@ -45,6 +45,7 @@ public fun <I, O> CoroutineScope.aktor(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend (message: O) -> Unit,
 ): SendChannel<I> {
+    val newContext = newCoroutineContext(context)
     val inputChannel = Channel<I>(
         capacity = Channel.UNLIMITED,
     )
@@ -55,10 +56,10 @@ public fun <I, O> CoroutineScope.aktor(
     inputChannel.invokeOnClose { throwable ->
         mailboxHasMessagesChannel.close(throwable)
     }
-    coroutineContext[Job]?.invokeOnCompletion { throwable ->
+    newContext[Job]?.invokeOnCompletion { throwable ->
         inputChannel.close(throwable)
     }
-    launch(context) {
+    launch(newContext) {
         while (!inputChannel.isClosedForSend) {
             val result = inputChannel.receiveCatching()
             if (result.isSuccess) {
@@ -67,7 +68,7 @@ public fun <I, O> CoroutineScope.aktor(
             }
         }
     }
-    launch(context) {
+    launch(newContext) {
         while (!inputChannel.isClosedForSend) {
             val result = mailboxHasMessagesChannel.receiveCatching()
             if (result.isSuccess) {
