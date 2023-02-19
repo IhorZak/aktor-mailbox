@@ -1,0 +1,13 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:ua.pp.ihorzak.aktormailbox////PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/index.html
+$dokka.location:ua.pp.ihorzak.aktormailbox//aktor/kotlinx.coroutines.CoroutineScope#ua.pp.ihorzak.aktormailbox.Mailbox[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]#kotlin.coroutines.CoroutineContext#kotlin.coroutines.SuspendFunction1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/aktor.html
+$dokka.location:ua.pp.ihorzak.aktormailbox//priority/ua.pp.ihorzak.aktormailbox.Mailbox.Companion#Comparator<T>[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/priority.html
+$dokka.location:ua.pp.ihorzak.aktormailbox//transform/ua.pp.ihorzak.aktormailbox.Mailbox.Companion#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/transform.html
+$dokka.location:ua.pp.ihorzak.aktormailbox/Mailbox.Companion///PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/-mailbox/-companion/index.html
+$dokka.location:ua.pp.ihorzak.aktormailbox/Mailbox///PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/-mailbox/index.html
+$dokka.location:ua.pp.ihorzak.aktormailbox/Mailbox/isEmpty/#/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/-mailbox/is-empty.html
+$dokka.location:ua.pp.ihorzak.aktormailbox/Mailbox/offer/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/-mailbox/offer.html
+$dokka.location:ua.pp.ihorzak.aktormailbox/Mailbox/poll/#/PointingToDeclaration/aktor-mailbox/ua.pp.ihorzak.aktormailbox/-mailbox/poll.html
+ua.pp.ihorzak.aktormailbox
+

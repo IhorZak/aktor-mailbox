@@ -1,8 +1,0 @@
-*.iml
-*.swp
-
-.gradle/
-.idea/
-build/
-
-.DS_Store
