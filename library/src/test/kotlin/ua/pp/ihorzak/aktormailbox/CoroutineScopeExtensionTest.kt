@@ -185,6 +185,54 @@ class CoroutineScopeExtensionTest {
         }
     }
 
+    @Test
+    fun `aktor() SendChannel close() without cause should call handler passed to invokeOnClose() without cause`() = runTest {
+        val sendChannel = aktor(
+            mailbox = createStubMailbox(),
+            block = {}
+        )
+        val mockCloseHandler = mock<(Throwable?) -> Unit>()
+
+        sendChannel.invokeOnClose(mockCloseHandler)
+        sendChannel.close()
+
+        verify(mockCloseHandler, times(1))(anyOrNull())
+        verify(mockCloseHandler, times(1))(null)
+    }
+
+    @Test
+    fun `aktor() SendChannel close() with cause should call handler passed to invokeOnClose() with cause`() = runTest {
+        val sendChannel = aktor(
+            mailbox = createStubMailbox(),
+            block = {}
+        )
+        val mockCloseHandler = mock<(Throwable?) -> Unit>()
+        class TestException : Exception()
+        val cause = TestException()
+
+        sendChannel.invokeOnClose(mockCloseHandler)
+        sendChannel.close(cause)
+
+        verify(mockCloseHandler, times(1))(anyOrNull())
+        verify(mockCloseHandler, times(1))(cause)
+    }
+
+    @Test
+    fun `aktor() CoroutineScope cancel() should call handler passed to aktor() SendChannel invokeOnClose()`() = runBlocking {
+        val scope = CoroutineScope(Job())
+        val sendChannel = scope.aktor(
+            mailbox = createStubMailbox(),
+            block = {}
+        )
+        val mockCloseHandler = mock<(Throwable?) -> Unit>()
+
+        sendChannel.invokeOnClose(mockCloseHandler)
+        scope.cancel()
+        scope.coroutineContext[Job]?.join()
+
+        verify(mockCloseHandler, times(1))(anyOrNull())
+    }
+
     private fun createStubMailbox(): Mailbox<Int, Int> = object : Mailbox<Int, Int> {
         private val queue: Queue<Int> = LinkedList()
 

@@ -46,8 +46,10 @@ public fun <I, O> CoroutineScope.aktor(
     block: suspend (message: O) -> Unit,
 ): SendChannel<I> {
     val newContext = newCoroutineContext(context)
-    val inputChannel = Channel<I>(
-        capacity = Channel.UNLIMITED,
+    val inputChannel = MultipleCloseHandlerChannel(
+        channel = Channel<I>(
+            capacity = Channel.UNLIMITED,
+        ),
     )
     val mailboxHasMessagesChannel = Channel<Unit>(
         capacity = 1,
