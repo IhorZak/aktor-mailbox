@@ -39,7 +39,10 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * @return [SendChannel] to send messages to the aktor mailbox.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(
+    DelicateCoroutinesApi::class,
+    ExperimentalCoroutinesApi::class,
+)
 public fun <I, O> CoroutineScope.aktor(
     mailbox: Mailbox<I, O>,
     context: CoroutineContext = EmptyCoroutineContext,

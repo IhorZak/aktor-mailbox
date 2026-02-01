@@ -25,16 +25,18 @@ import ua.pp.ihorzak.aktormailbox.Mailbox
 import ua.pp.ihorzak.aktormailbox.aktor
 import ua.pp.ihorzak.aktormailbox.priority
 import ua.pp.ihorzak.aktormailbox.transform
-import kotlin.coroutines.coroutineContext
 
 /**
  * Sample application entry point function.
  *
  * @param args Application start arguments.
  */
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(
+    DelicateCoroutinesApi::class,
+    ExperimentalCoroutinesApi::class,
+)
 suspend fun main(args: Array<String>) {
-    val scope = CoroutineScope(coroutineContext + newSingleThreadContext("aktor"))
+    val scope = CoroutineScope(currentCoroutineContext() + newSingleThreadContext("aktor"))
     processInput(
         input = prepareInput(args),
         scope = scope,

@@ -6,10 +6,8 @@ repositories {
     mavenCentral()
 }
 
-kotlinDslPluginOptions {
-    jvmTarget.set(provider { java.targetCompatibility.toString() })
-}
-
-dependencies {
-    implementation(gradleApi())
+kotlin {
+    jvmToolchain(
+        jdkVersion = JavaVersion.VERSION_11.majorVersion.toInt(),
+    )
 }

@@ -9,6 +9,12 @@ plugins {
 group = "ua.pp.ihorzak.aktor-mailbox"
 version = Version.PROJECT
 
+kotlin {
+    jvmToolchain(
+        jdkVersion = JavaVersion.VERSION_11.majorVersion.toInt(),
+    )
+}
+
 dependencies {
     implementation(project(":library"))
 

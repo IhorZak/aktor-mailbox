@@ -17,7 +17,7 @@
 package ua.pp.ihorzak.aktormailbox
 
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.mockito.Mockito.*
+import org.mockito.kotlin.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -71,7 +71,13 @@ class TransformMailboxTest {
 
     @Test
     fun `offer() should call transform`() {
-        val transform: (String) -> String = spy { input -> "Processed $input" }
+        val transform: (String) -> String = mock<Function1<String, String>> {
+            on {
+                invoke(any())
+            } doAnswer { invocation ->
+                "Processed ${invocation.arguments[0]}"
+            }
+        }
         val mailbox = TransformMailbox(transform)
         val message = "Message 1"
 

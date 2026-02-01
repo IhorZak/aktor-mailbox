@@ -1,4 +1,4 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaExtension
 import ua.pp.ihorzak.aktormailbox.buildsrc.Library
 import ua.pp.ihorzak.aktormailbox.buildsrc.Plugin
 import ua.pp.ihorzak.aktormailbox.buildsrc.Version
@@ -12,6 +12,7 @@ plugins {
 }
 
 apply(plugin = Plugin.DOKKA)
+apply(plugin = Plugin.DOKKA_JAVADOC)
 
 project.base.archivesName.set("aktor-mailbox")
 group = "ua.pp.ihorzak"
@@ -23,6 +24,10 @@ val localProperties = Properties().apply {
 
 kotlin {
     explicitApi()
+
+    jvmToolchain(
+        jdkVersion = JavaVersion.VERSION_11.majorVersion.toInt(),
+    )
 }
 
 java {
@@ -38,19 +43,17 @@ dependencies {
     testImplementation(Library.MOCKITO_KOTLIN)
 }
 
-val dokkaJavadoc by tasks.getting(DokkaTask::class)
-
 val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
-    dependsOn(dokkaJavadoc)
+    dependsOn("dokkaGeneratePublicationJavadoc")
     archiveClassifier.set("javadoc")
-    from(dokkaJavadoc.outputDirectory)
+    from(layout.buildDirectory.dir("dokka/javadoc"))
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-tasks.withType<DokkaTask>().configureEach {
+configure<DokkaExtension> {
     moduleName.set("aktor-mailbox")
     moduleVersion.set(Version.PROJECT)
 }

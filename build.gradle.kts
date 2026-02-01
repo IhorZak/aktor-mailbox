@@ -1,4 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ua.pp.ihorzak.aktormailbox.buildsrc.Plugin
 import java.util.*
@@ -47,11 +48,9 @@ allprojects {
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_11.toString()
-            freeCompilerArgs = listOf(
-                "-Xopt-in=kotlinx.coroutines.ObsoleteCoroutinesApi"
-            )
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ObsoleteCoroutinesApi")
         }
     }
 
@@ -81,5 +80,5 @@ allprojects {
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

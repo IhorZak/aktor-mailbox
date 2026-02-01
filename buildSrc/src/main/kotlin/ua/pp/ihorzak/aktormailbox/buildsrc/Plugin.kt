@@ -4,6 +4,7 @@ object Plugin {
     const val VERSIONS = "com.github.ben-manes.versions"
 
     const val DOKKA = "org.jetbrains.dokka"
+    const val DOKKA_JAVADOC = "org.jetbrains.dokka-javadoc"
 
     const val NEXUS_PUBLISH = "io.github.gradle-nexus.publish-plugin"
 }
