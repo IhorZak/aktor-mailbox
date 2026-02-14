@@ -18,7 +18,7 @@ package ua.pp.ihorzak.aktormailbox
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 private typealias CloseHandler = (cause: Throwable?) -> Unit
 
@@ -31,17 +31,17 @@ private typealias CloseHandler = (cause: Throwable?) -> Unit
 internal class MultipleCloseHandlerChannel<T>(
     private val channel: Channel<T>,
 ) : Channel<T> by channel {
-    private val closeHandlerList: MutableList<CloseHandler> = LinkedList()
+    private val closeHandlers: MutableCollection<CloseHandler> = CopyOnWriteArrayList()
 
     init {
         channel.invokeOnClose { cause ->
-            for (handler in closeHandlerList) {
+            for (handler in closeHandlers) {
                 handler(cause)
             }
         }
     }
 
     override fun invokeOnClose(handler: (cause: Throwable?) -> Unit) {
-        closeHandlerList.add(handler)
+        closeHandlers.add(handler)
     }
 }
