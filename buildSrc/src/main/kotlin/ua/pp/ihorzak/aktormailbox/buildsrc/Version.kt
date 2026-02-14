@@ -5,7 +5,7 @@ object Version {
 
     const val VERSIONS = "0.53.0"
 
-    const val KOTLIN = "2.3.0"
+    const val KOTLIN = "2.3.10"
 
     const val DOKKA = "2.1.0"
 
