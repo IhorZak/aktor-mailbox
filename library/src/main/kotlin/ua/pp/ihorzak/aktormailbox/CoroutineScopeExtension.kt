@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package ua.pp.ihorzak.aktormailbox
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlin.coroutines.CoroutineContext
@@ -39,56 +38,43 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * @return [SendChannel] to send messages to the aktor mailbox.
  */
-@OptIn(
-    DelicateCoroutinesApi::class,
-    ExperimentalCoroutinesApi::class,
-)
+@OptIn(ExperimentalCoroutinesApi::class)
 public fun <I, O> CoroutineScope.aktor(
     mailbox: Mailbox<I, O>,
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend (message: O) -> Unit,
 ): SendChannel<I> {
     val newContext = newCoroutineContext(context)
-    val inputChannel = MultipleCloseHandlerChannel(
-        channel = Channel<I>(
-            capacity = Channel.UNLIMITED,
-        ),
+    val inputChannel = Channel<I>(
+        capacity = Channel.UNLIMITED,
     )
-    val mailboxHasMessagesChannel = Channel<Unit>(
-        capacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    inputChannel.invokeOnClose { throwable ->
-        mailboxHasMessagesChannel.close(throwable)
+    fun drainInput() {
+        var result = inputChannel.tryReceive()
+        while (result.isSuccess) {
+            mailbox.offer(result.getOrThrow())
+            result = inputChannel.tryReceive()
+        }
     }
     newContext[Job]?.invokeOnCompletion { throwable ->
         inputChannel.close(throwable)
     }
     launch(newContext) {
-        while (!inputChannel.isClosedForSend) {
-            val result = inputChannel.receiveCatching()
-            if (result.isSuccess) {
-                mailbox.offer(result.getOrThrow())
-                mailboxHasMessagesChannel.send(Unit)
-            }
-        }
-    }
-    launch(newContext) {
-        while (!inputChannel.isClosedForSend) {
-            val result = mailboxHasMessagesChannel.receiveCatching()
-            if (result.isSuccess) {
-                mailbox.poll()?.let { message ->
-                    try {
-                        block(message)
-                        if (!mailbox.isEmpty) {
-                            mailboxHasMessagesChannel.send(Unit)
-                        }
-                    } catch (throwable: Throwable) {
-                        inputChannel.close(throwable)
-                        throw throwable
-                    }
+        var result = inputChannel.receiveCatching()
+        while (result.isSuccess) {
+            mailbox.offer(result.getOrThrow())
+            drainInput()
+            var message = mailbox.poll()
+            while (message != null) {
+                try {
+                    block(message)
+                    drainInput()
+                } catch (throwable: Throwable) {
+                    inputChannel.close(throwable)
+                    throw throwable
                 }
+                message = mailbox.poll()
             }
+            result = inputChannel.receiveCatching()
         }
     }
     return inputChannel
