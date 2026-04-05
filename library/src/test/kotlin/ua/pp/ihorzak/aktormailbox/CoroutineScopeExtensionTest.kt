@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import org.junit.jupiter.api.Timeout
 import org.mockito.kotlin.*
 import java.util.*
 import java.util.Queue
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -86,7 +88,7 @@ class CoroutineScopeExtensionTest {
         value = TEST_TIMEOUT_VALUE_SECONDS,
         unit = TimeUnit.SECONDS,
     )
-    fun `aktor() SendChannel should call Mailbox isEmpty, offer() and poll() while processing messages`() = runTest {
+    fun `aktor() SendChannel should call Mailbox offer() and poll() while processing messages`() = runTest {
         val mailbox = spy(createStubMailbox())
         val processedMessageChannel = Channel<Int>(capacity = Channel.UNLIMITED)
         val sendChannel = aktor(
@@ -111,7 +113,6 @@ class CoroutineScopeExtensionTest {
         }
         sendChannel.close()
 
-        verify(mailbox, atLeastOnce()).isEmpty
         verify(mailbox, times(messageList.size)).offer(any())
         verify(mailbox, atLeast(messageList.size)).poll()
     }
@@ -138,6 +139,158 @@ class CoroutineScopeExtensionTest {
         assertEquals(
             expected = dispatcher,
             actual = processingDispatcher,
+        )
+    }
+
+    @Test
+    @Timeout(
+        value = TEST_TIMEOUT_VALUE_SECONDS,
+        unit = TimeUnit.SECONDS,
+    )
+    fun `aktor() SendChannel should process all messages without loss on multi-threaded dispatcher`() = runBlocking {
+        val senderMessageCount = 2500
+        val senderCount = 4
+        val messageCount = senderMessageCount * senderCount
+        val dispatcher = Executors.newFixedThreadPool(senderCount).asCoroutineDispatcher()
+        val processedCount = AtomicInteger(0)
+        val completionJob = Job()
+        val sendChannel = aktor(
+            mailbox = createStubMailbox(),
+            context = dispatcher,
+        ) { _ ->
+            if (processedCount.incrementAndGet() == messageCount) {
+                completionJob.complete()
+            }
+        }
+
+        val senders = (0..<senderCount).map { senderIndex ->
+            launch(Dispatchers.Default) {
+                val start = senderIndex * senderMessageCount
+                for (i in start..<start + senderMessageCount) {
+                    sendChannel.send(i)
+                }
+            }
+        }
+        senders.joinAll()
+        completionJob.join()
+        sendChannel.close()
+
+        assertEquals(
+            expected = messageCount,
+            actual = processedCount.get(),
+        )
+    }
+
+    @Test
+    @Timeout(
+        value = TEST_TIMEOUT_VALUE_SECONDS,
+        unit = TimeUnit.SECONDS,
+    )
+    fun `aktor() SendChannel should process all PriorityMailbox messages without loss on multi-threaded dispatcher`() = runBlocking {
+        val senderMessageCount = 2500
+        val senderCount = 4
+        val messageCount = senderMessageCount * senderCount
+        val dispatcher = Executors.newFixedThreadPool(senderCount).asCoroutineDispatcher()
+        val processedCount = AtomicInteger(0)
+        val completionJob = Job()
+        val sendChannel = aktor(
+            mailbox = Mailbox.priority(compareBy { it }),
+            context = dispatcher,
+        ) { _: Int ->
+            if (processedCount.incrementAndGet() == messageCount) {
+                completionJob.complete()
+            }
+        }
+
+        val senders = (0..<senderCount).map { senderIndex ->
+            launch(Dispatchers.Default) {
+                val start = senderIndex * senderMessageCount
+                for (i in start..<start + senderMessageCount) {
+                    sendChannel.send(i)
+                }
+            }
+        }
+        senders.joinAll()
+        completionJob.join()
+        sendChannel.close()
+
+        assertEquals(
+            expected = messageCount,
+            actual = processedCount.get(),
+        )
+    }
+
+    @Test
+    @Timeout(
+        value = TEST_TIMEOUT_VALUE_SECONDS,
+        unit = TimeUnit.SECONDS,
+    )
+    fun `aktor() SendChannel should process all TransformMailbox messages without loss on multi-threaded dispatcher`() = runBlocking {
+        val senderMessageCount = 2500
+        val senderCount = 4
+        val messageCount = senderMessageCount * senderCount
+        val dispatcher = Executors.newFixedThreadPool(senderCount).asCoroutineDispatcher()
+        val processedCount = AtomicInteger(0)
+        val completionJob = Job()
+        val sendChannel = aktor(
+            mailbox = Mailbox.transform<Int, Int> { it },
+            context = dispatcher,
+        ) { _: Int ->
+            if (processedCount.incrementAndGet() == messageCount) {
+                completionJob.complete()
+            }
+        }
+
+        val senders = (0..<senderCount).map { senderIndex ->
+            launch(Dispatchers.Default) {
+                val start = senderIndex * senderMessageCount
+                for (i in start..<start + senderMessageCount) {
+                    sendChannel.send(i)
+                }
+            }
+        }
+        senders.joinAll()
+        completionJob.join()
+        sendChannel.close()
+
+        assertEquals(
+            expected = messageCount,
+            actual = processedCount.get(),
+        )
+    }
+
+    @Test
+    @Timeout(
+        value = TEST_TIMEOUT_VALUE_SECONDS,
+        unit = TimeUnit.SECONDS,
+    )
+    fun `aktor() SendChannel should not stall messages on multi-threaded dispatcher`() = runBlocking {
+        val messageCount = 1000
+        val threadCount = 4
+        val dispatcher = Executors.newFixedThreadPool(threadCount).asCoroutineDispatcher()
+        val processedCount = AtomicInteger(0)
+        val completionJob = Job()
+        val sendChannel = aktor(
+            mailbox = createStubMailbox(),
+            context = dispatcher,
+        ) { _ ->
+            if (processedCount.incrementAndGet() == messageCount) {
+                completionJob.complete()
+            }
+        }
+
+        for (i in 0..<messageCount) {
+            sendChannel.send(i)
+            if (i % 10 == 0) {
+                yield()
+            }
+        }
+        completionJob.join()
+        sendChannel.close()
+
+        assertEquals(
+            expected = messageCount,
+            actual = processedCount.get(),
         )
     }
 
