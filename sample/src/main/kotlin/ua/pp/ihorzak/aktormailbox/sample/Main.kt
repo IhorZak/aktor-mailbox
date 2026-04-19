@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import ua.pp.ihorzak.aktormailbox.Mailbox
 import ua.pp.ihorzak.aktormailbox.aktor
 import ua.pp.ihorzak.aktormailbox.priority
 import ua.pp.ihorzak.aktormailbox.transform
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Sample application entry point function.
@@ -80,7 +82,7 @@ private suspend fun processInput(
         }
     ) { message ->
         println("${Thread.currentThread().name}: Processing message: $message")
-        delay(1000L)
+        delay(1.seconds)
         println("${Thread.currentThread().name}: Processed message: $message")
         if (++processedCount == input.elements.size) {
             finishJob.complete()
@@ -91,7 +93,7 @@ private suspend fun processInput(
         aktor.send(element)
         println("Sent message: $element")
         if (index < input.elements.size - 1) {
-            delay(400L)
+            delay(400.milliseconds)
         }
     }
     finishJob.join()
@@ -104,5 +106,5 @@ private enum class MailboxType {
 
 private data class Input(
     val mailboxType: MailboxType,
-    val elements: Collection<Int>
+    val elements: Collection<Int>,
 )
