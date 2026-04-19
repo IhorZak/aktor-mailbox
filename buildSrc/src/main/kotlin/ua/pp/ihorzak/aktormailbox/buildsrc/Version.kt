@@ -1,7 +1,7 @@
 package ua.pp.ihorzak.aktormailbox.buildsrc
 
 object Version {
-    const val PROJECT = "0.2.0"
+    const val PROJECT = "1.0.0"
 
     const val VERSIONS = "0.53.0"
 

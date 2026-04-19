@@ -48,7 +48,7 @@ buildscript {
 }
 
 dependencies {
-    implementation("ua.pp.ihorzak:aktor-mailbox:0.2.0")
+    implementation("ua.pp.ihorzak:aktor-mailbox:1.0.0")
 }
 ```
 
@@ -57,7 +57,7 @@ dependencies {
 
 # License
 <pre>
-Copyright 2023 Ihor Zakhozhyi
+Copyright 2023-2026 Ihor Zakhozhyi
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -72,5 +72,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 </pre>
 
-  [1]: https://search.maven.org/artifact/ua.pp.ihorzak/aktor-mailbox/0.1.0/jar
+  [1]: https://central.sonatype.com/artifact/ua.pp.ihorzak/aktor-mailbox
   [2]: https://ihorzak.github.io/aktor-mailbox/
