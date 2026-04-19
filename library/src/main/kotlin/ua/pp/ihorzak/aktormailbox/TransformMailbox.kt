@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,6 @@ internal class TransformMailbox<I, O>(
     private val transform: (I) -> O,
 ) : Mailbox<I, O> {
     private val queue: Queue<O> = LinkedList()
-
-    override val isEmpty: Boolean
-        get() = queue.isEmpty()
 
     override fun offer(message: I) {
         queue.add(transform(message))

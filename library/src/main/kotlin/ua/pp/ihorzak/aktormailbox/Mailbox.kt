@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ package ua.pp.ihorzak.aktormailbox
  */
 public interface Mailbox<I, O> {
     public companion object;
-
-    /**
-     * Indicates if this actor mailbox queue has no messages to process by actor.
-     */
-    public val isEmpty: Boolean
 
     /**
      * Adds message to actor mailbox queue.

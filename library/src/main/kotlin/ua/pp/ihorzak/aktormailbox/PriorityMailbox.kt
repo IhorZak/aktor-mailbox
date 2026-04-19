@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,6 @@ internal class PriorityMailbox<T>(
     comparator: Comparator<T>,
 ) : Mailbox<T, T> {
     private val queue: Queue<T> = PriorityQueue(INITIAL_CAPACITY, comparator)
-
-    override val isEmpty: Boolean
-        get() = queue.isEmpty()
 
     override fun offer(message: T) {
         queue.offer(message)

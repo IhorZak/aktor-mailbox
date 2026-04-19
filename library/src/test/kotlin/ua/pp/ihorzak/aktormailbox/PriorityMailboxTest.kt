@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,48 +22,6 @@ import kotlin.test.*
  * [PriorityMailbox] unit tests.
  */
 class PriorityMailboxTest {
-    @Test
-    fun `isEmpty in initial state should return true`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-
-        val result = mailbox.isEmpty
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isEmpty after offer() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isEmpty after offer() and poll() should return true`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-        mailbox.poll()
-
-        val result = mailbox.isEmpty
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isEmpty after offer(), poll() and offer() should return false`() {
-        val mailbox = PriorityMailbox<Int>(Int::compareTo)
-        mailbox.offer(1)
-        mailbox.poll()
-        mailbox.offer(2)
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
     @Test
     fun `poll() in initial state should return null`() {
         val mailbox = PriorityMailbox<Int>(Int::compareTo)
@@ -109,11 +67,7 @@ class PriorityMailboxTest {
         mailbox.offer(message2)
         mailbox.offer(message3)
 
-        val resultList = buildList {
-            while (!mailbox.isEmpty) {
-                add(mailbox.poll())
-            }
-        }
+        val resultList = generateSequence { mailbox.poll() }.toList()
 
         assertEquals(
             expected = listOf(message1, message2, message3).sorted(),

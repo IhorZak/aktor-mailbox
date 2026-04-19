@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ihor Zakhozhyi
+ * Copyright 2023-2026 Ihor Zakhozhyi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,59 +16,15 @@
 
 package ua.pp.ihorzak.aktormailbox
 
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.mockito.kotlin.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 /**
  * [TransformMailbox] unit tests.
  */
 class TransformMailboxTest {
-    @Test
-    fun `isEmpty in initial state should return true`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-
-        val result = mailbox.isEmpty
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isEmpty after offer() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isEmpty after offer() and poll() should return true`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-        mailbox.poll()
-
-        val result = mailbox.isEmpty
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isEmpty after offer(), poll() and offer() should return false`() {
-        val mailbox = TransformMailbox<String, String> { input -> "Processed $input" }
-        mailbox.offer("Message 1")
-        mailbox.poll()
-        mailbox.offer("Message 2")
-
-        val result = mailbox.isEmpty
-
-        assertFalse(result)
-    }
-
     @Test
     fun `offer() should call transform`() {
         val transform: (String) -> String = mock<Function1<String, String>> {

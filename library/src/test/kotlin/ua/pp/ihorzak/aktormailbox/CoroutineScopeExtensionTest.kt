@@ -390,9 +390,6 @@ class CoroutineScopeExtensionTest {
     private fun createStubMailbox(): Mailbox<Int, Int> = object : Mailbox<Int, Int> {
         private val queue: Queue<Int> = LinkedList()
 
-        override val isEmpty: Boolean
-            get() = queue.isEmpty()
-
         override fun offer(message: Int) {
             queue.offer(message)
         }
