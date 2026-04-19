@@ -28,13 +28,14 @@ val localProperties = Properties().apply {
 }
 
 nexusPublishing {
+    packageGroup.set("ua.pp.ihorzak")
+
     repositories {
         create("sonatype") {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
             username.set(localProperties.getProperty("sonatypeUsername"))
             password.set(localProperties.getProperty("sonatypePassword"))
-            stagingProfileId.set(localProperties.getProperty("sonatypeStagingProfileId"))
         }
     }
 }
