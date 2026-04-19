@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/ua.pp.ihorzak/aktor-mailbox/badge.svg)](https://search.maven.org/artifact/ua.pp.ihorzak/aktor-mailbox)
+[![Maven Central](https://img.shields.io/maven-central/v/ua.pp.ihorzak/aktor-mailbox.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/ua.pp.ihorzak/aktor-mailbox)
 
 # aktor-mailbox
 aktor-mailbox is a Kotlin language library that enables the creation of actors with input message preprocessing capabilities. Actors represent independent units of computation in concurrent and distributed systems that communicate and collaborate with each other to achieve a common goal.
